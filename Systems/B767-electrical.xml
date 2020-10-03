@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+
+<!-- Copyright (c) 2020 Jonathan Redpath -->
+
+<system name="B767: Electrical">	
+	
+	<channel name="Sources" execrate="8">
+	
+		<!-- IDG1 -->
+		<pure_gain name="/systems/electrical/sources/idg-1/drive-rpm-input">
+			<input>/engines/engine[0]/n2-actual</input> <!-- FIXME -->
+			<gain>90.298</gain> <!-- FIXME -->
+		</pure_gain>
+		
+		<pure_gain name="/systems/electrical/sources/idg-1/drive-rpm">
+			<input>/systems/electrical/sources/idg-1/drive-rpm-input</input>
+			<gain>/controls/electrical/switches/gen-drive-1</gain>
+		</pure_gain>
+		
+		<fcs_function name="/systems/electrical/sources/idg-1/csd-gearbox-ratio-cmd">
+			<function>
+				<quotient>
+					<value>12000</value>
+					<property>/systems/electrical/sources/idg-1/drive-rpm</property>
+				</quotient>
+			</function>
+			<clipto>
+				<min>1.1</min> <!-- FIXME -->
+				<max>2.8</max>
+			</clipto>
+		</fcs_function>
+		
+		<lag_filter name="/systems/electrical/sources/idg-1/csd-gearbox-ratio">
+			<input>/systems/electrical/sources/idg-1/csd-gearbox-ratio-cmd</input>
+			<c1>40</c1>
+		</lag_filter>
+		
+		<pure_gain name="/systems/electrical/sources/idg-1/csd-rpm">
+			<input>/systems/electrical/sources/idg-1/drive-rpm</input>
+			<gain>/systems/electrical/sources/idg-1/csd-gearbox-ratio</gain>
+		</pure_gain>
+		
+		<fcs_function name="/systems/electrical/sources/idg-1/pmg-volt">
+			<function>
+				<product>
+					<property>/systems/electrical/sources/idg-1/csd-rpm</property>
+					<quotient>
+						<value>115</value>
+						<value>12000</value>
+					</quotient>
+				</product>
+			</function>
+		</fcs_function>
+		
+		<fcs_function name="/systems/electrical/sources/idg-1/pmg-hertz">
+			<function>
+				<quotient>
+					<product>
+						<property>/systems/electrical/sources/idg-1/csd-rpm</property>
+						<value>4</value> <!-- Number of poles in generator -->
+					</product>
+					<value>120</value>
+				</quotient>
+			</function>
+		</fcs_function>
+		
+		<switch name="/systems/electrical/sources/idg-1/gcb-breaker">
+			<default value="0"/>
+			<test logic="AND" value="1">
+				/controls/electrical/switches/gen-1 eq 1
+				/systems/failures/electrical/gen-1 ne 1
+				/systems/electrical/sources/idg-1/pmg-volt ge 110
+				/systems/electrical/sources/idg-1/pmg-volt le 120
+			</test>
+		</switch>
+		
+		<pure_gain name="/systems/electrical/sources/idg-1/output-volt">
+			<input>/systems/electrical/sources/idg-1/pmg-volt</input>
+			<gain>/systems/electrical/sources/idg-1/gcb-breaker</gain>
+		</pure_gain>
+		
+		<pure_gain name="/systems/electrical/sources/idg-1/output-hertz">
+			<input>/systems/electrical/sources/idg-1/pmg-hertz</input>
+			<gain>/systems/electrical/sources/idg-1/gcb-breaker</gain>
+		</pure_gain>
+		
+		<!-- IDG1 -->
+		<pure_gain name="/systems/electrical/sources/idg-2/drive-rpm-input">
+			<input>/engines/engine[1]/n2-actual</input> <!-- FIXME -->
+			<gain>90.298</gain> <!-- FIXME -->
+		</pure_gain>
+		
+		<pure_gain name="/systems/electrical/sources/idg-2/drive-rpm">
+			<input>/systems/electrical/sources/idg-2/drive-rpm-input</input>
+			<gain>/controls/electrical/switches/gen-drive-2</gain>
+		</pure_gain>
+		
+		<fcs_function name="/systems/electrical/sources/idg-2/csd-gearbox-ratio-cmd">
+			<function>
+				<quotient>
+					<value>12000</value>
+					<property>/systems/electrical/sources/idg-2/drive-rpm</property>
+				</quotient>
+			</function>
+			<clipto>
+				<min>1.1</min> <!-- FIXME -->
+				<max>2.8</max>
+			</clipto>
+		</fcs_function>
+		
+		<lag_filter name="/systems/electrical/sources/idg-2/csd-gearbox-ratio">
+			<input>/systems/electrical/sources/idg-2/csd-gearbox-ratio-cmd</input>
+			<c1>40</c1>
+		</lag_filter>
+		
+		<pure_gain name="/systems/electrical/sources/idg-2/csd-rpm">
+			<input>/systems/electrical/sources/idg-2/drive-rpm</input>
+			<gain>/systems/electrical/sources/idg-2/csd-gearbox-ratio</gain>
+		</pure_gain>
+		
+		<fcs_function name="/systems/electrical/sources/idg-2/pmg-volt">
+			<function>
+				<product>
+					<property>/systems/electrical/sources/idg-2/csd-rpm</property>
+					<quotient>
+						<value>115</value>
+						<value>12000</value>
+					</quotient>
+				</product>
+			</function>
+		</fcs_function>
+		
+		<fcs_function name="/systems/electrical/sources/idg-2/pmg-hertz">
+			<function>
+				<quotient>
+					<product>
+						<property>/systems/electrical/sources/idg-2/csd-rpm</property>
+						<value>4</value> <!-- Number of poles in generator -->
+					</product>
+					<value>120</value>
+				</quotient>
+			</function>
+		</fcs_function>
+		
+		<switch name="/systems/electrical/sources/idg-2/gcb-breaker">
+			<default value="0"/>
+			<test logic="AND" value="1">
+				/controls/electrical/switches/gen-2 eq 1
+				/systems/failures/electrical/gen-2 ne 1
+				/systems/electrical/sources/idg-2/pmg-volt ge 110
+				/systems/electrical/sources/idg-2/pmg-volt le 120
+			</test>
+		</switch>
+		
+		<pure_gain name="/systems/electrical/sources/idg-2/output-volt">
+			<input>/systems/electrical/sources/idg-2/pmg-volt</input>
+			<gain>/systems/electrical/sources/idg-2/gcb-breaker</gain>
+		</pure_gain>
+		
+		<pure_gain name="/systems/electrical/sources/idg-2/output-hertz">
+			<input>/systems/electrical/sources/idg-2/pmg-hertz</input>
+			<gain>/systems/electrical/sources/idg-2/gcb-breaker</gain>
+		</pure_gain>
+		
+	</channel>
+	
+	<channel name="Warning Lights">
+		
+		<switch name="/systems/electrical/warnings/gen-1-off">
+			<default value="0"/>
+			<test logic="OR" value="1">
+				/systems/electrical/sources/idg-1/gcb-breaker eq 0
+			</test>
+		</switch>
+		
+		<switch name="/systems/electrical/warnings/gen-2-off">
+			<default value="0"/>
+			<test logic="OR" value="1">
+				/systems/electrical/sources/idg-2/gcb-breaker eq 0
+			</test>
+		</switch>
+		
+	</channel>
+	
+</system>
